@@ -3,10 +3,10 @@ update_prompt () {
 	local status=$?
 	[ "$status" ] || status=0
 
-	local MEM_PERCENT
-	MEM_PERCENT=$(( 100 * $(
-		env -i LANG=C free -b | grep -i mem | sed 's/^[^0-9]*\([0-9]*\).*\s\([0-9]\{1,\}\)\s*$/\2 \/ \1/'
-	) ))
+	#local MEM_PERCENT
+	#MEM_PERCENT=$(( 100 - 100 * $(
+	#	env -i LANG=C free -b | grep -i mem | sed 's/^[^0-9]*\([0-9]*\).*\s\([0-9]\{1,\}\)\s*$/\2 \/ \1/'
+	#) ))
 
 	local CURRENT_MOUNTPOINT
 	which findmnt >/dev/null && {
@@ -22,15 +22,13 @@ update_prompt () {
 		done
 	)
 	
-	local prefix
-	prefix="[\D{%H:%M:%S}] \u@\h M:${MEM_PERCENT}%, S:${DISK_USAGE}"
+	PS1="\007\[\033[07m\]\D{%H:%M:%S} \W:${DISK_USAGE}"
 	[ $status -eq 0 ] && {
-		suffix="\[\033[00m\]\[\033[42;39m\]\[\033[42;37m\] \$ \[\033[49;32m\]\[\033[00m\] "
+		PS1="${PS1}\[\033[00m\]\[\033[42;39m\]\[\033[42;37m\]\u\$\[\033[49;32m\]\[\033[00m\] "
 	} || {
-		suffix="\[\033[00m\]\[\033[41;39m\]\[\033[41;37m\] \$ \[\033[49;31m\]\[\033[00m\] "
+		PS1="${PS1}\[\033[00m\]\[\033[41;39m\]\[\033[41;37m\]\u\$\[\033[49;31m\]\[\033[00m\] "
 	}
 
-	PS1="${prefix} \[\033[07m\] \W ${suffix}"
 	export PS1
 }
 
